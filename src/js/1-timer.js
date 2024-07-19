@@ -19,7 +19,7 @@ let intervalId = null;
 flatpickr('#datetime-picker', {
   enableTime: true,
   time_24hr: true,
-  defaultDate: null;
+  defaultDate: new Date();
   minuteIncrement: 1,
 
   onClose(selectedDates) {
@@ -57,6 +57,8 @@ function timer(intervalId) {
   hoursEl.textContent = '00';
   minutesEl.textContent = '00';
   secondsEl.textContent = '00';
+    inputEl.removeAttribute('disabled');
+    return;
   }
 }
 function convertMs(ms) {
