@@ -53,6 +53,10 @@ function timer(intervalId) {
   secondsEl.textContent = addLeadingZero(seconds);
   if (difference <= 0) {
     clearInterval(intervalId);
+    daysEl.textContent = '00';
+  hoursEl.textContent = '00';
+  minutesEl.textContent = '00';
+  secondsEl.textContent = '00';
   }
 }
 function convertMs(ms) {
