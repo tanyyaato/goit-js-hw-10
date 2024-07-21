@@ -3,8 +3,9 @@
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 // alert library
-// import iziToast from 'izitoast';
-// import 'izitoast/dist/css/iziToast.min.css';
+import iziToast from 'izitoast';
+import 'izitoast/dist/css/iziToast.min.css';
+
 //
 const inputEl = document.getElementById('datetime-picker');
 const button = document.querySelector('button');
@@ -16,29 +17,40 @@ const secondsEl = document.querySelector('[data-seconds]');
 
 let userSelectedDate = null;
 let intervalId = null;
+// const svgIconClose = `<svg width = "24px" height = "24px" class="icon icon-Group"><use xlink:href="#icon-Group"></use></svg>`;
+
 flatpickr('#datetime-picker', {
   enableTime: true,
   time_24hr: true,
-  defaultDate: new Date(),
+  defaultDate: null,
   minuteIncrement: 1,
 
   onClose(selectedDates) {
     console.log(selectedDates[0]);
     if (selectedDates[0].getTime() > Date.now()) {
       userSelectedDate = selectedDates[0].getTime();
-      button.removeAttribute('disabled');
-      console.log('userSelectedDate', userSelectedDate);
+      toggleAttribute(button, false);
     } else {
-      button.setAttribute('disabled', '');
-      alert('Please choose a date in the future');
+      toggleAttribute(button, true);
+      iziToast.show({
+        title: '',
+        color: 'red',
+        position: 'topRight',
+        timeout: 5000,
+        close: false,
+        closeOnClick: true,
+        message: 'Please choose a date in the future',
+        iconUrl: '../img/sprite.svg#close-btn',
+        iconColor: '#FAFAFB',
+      });
     }
   },
 });
 
 button.addEventListener('click', () => {
   if (userSelectedDate) {
-    button.setAttribute('disabled', '');
-    inputEl.setAttribute('disabled', '');
+    toggleAttribute(button, true);
+    toggleAttribute(inputEl, true);
   }
   intervalId = setInterval(timer, 1000);
 });
@@ -53,12 +65,28 @@ function timer(intervalId) {
   secondsEl.textContent = addLeadingZero(seconds);
   if (difference <= 0) {
     clearInterval(intervalId);
-    daysEl.textContent = '00';
+    timerEnd();
+    toggleAttribute(inputEl, false);
+    toggleAttribute(button, true);
+    // flatpickr('#datetime-picker', {
+    //   onClose(selectedDates) {
+    //     toggleAttribute(button, true);
+    //   },
+    // });
+    return;
+  }
+}
+function timerEnd() {
+  daysEl.textContent = '00';
   hoursEl.textContent = '00';
   minutesEl.textContent = '00';
   secondsEl.textContent = '00';
-    inputEl.removeAttribute('disabled');
-    return;
+}
+function toggleAttribute(element, status) {
+  if (status) {
+    element.setAttribute('disabled', '');
+  } else {
+    element.removeAttribute('disabled');
   }
 }
 function convertMs(ms) {
